@@ -2,6 +2,7 @@ VERSION=1.25.3
 
 PREFIX?=/usr/local
 LIBEXECDIR?=$(PREFIX)/libexec
+DKMSDIR?=$(PREFIX)/usr/src/bcachefs
 PKG_CONFIG?=pkg-config
 INSTALL=install
 LN=ln
@@ -223,6 +224,13 @@ install: bcachefs $(optional_install)
 install_systemd: $(systemd_services) $(systemd_libexecfiles)
 	$(INSTALL) -m0755 -D $(systemd_libexecfiles) -t $(DESTDIR)$(LIBEXECDIR)
 	$(INSTALL) -m0644 -D $(systemd_services) -t $(DESTDIR)$(PKGCONFIG_SERVICEDIR)
+
+.PHONY: install_dkms
+install_dkms:
+	$(INSTALL) -m0644 -D dkms/Makefile    -t $(DESTDIR)$(PREFIX)$(DKMSDIR)
+	$(INSTALL) -m0644 -D dkms/dkms.conf   -t $(DESTDIR)$(PREFIX)$(DKMSDIR)
+	$(INSTALL) $(LINUX_DIR)/fs/bcachefs/*.[ch] $(DESDIR)$(PREFIX)$(DKMSDIR)/src/fs/bcachefs
+	cp $(LINUX_DIR)/fs/bcachefs/*.[ch] $(DESTDIR)$(PREFIX)$(DKMSDIR)/src/fs/bcachefs
 
 .PHONY: clean
 clean:
